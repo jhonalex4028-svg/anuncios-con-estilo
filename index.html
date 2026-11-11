@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anuncios con Estilos | Empresas de tu región</title>
+  <link rel="icon" href="imagenes/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="navbar-slot"></div>
+
+  <!-- HERO SLIDER: fotos reales de Tame -->
+  <header class="hero-slider">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active" style="background-image:url('imagenes/fotos/puente-rio-tame.jpg')">
+          <div class="carousel-caption-custom">
+            <span class="eyebrow">Tame, Arauca</span>
+            <h1>Descubre y apoya el <span class="highlight">talento</span> de tu región</h1>
+            <p>Anuncios con Estilos es la plataforma que conecta empresas, emprendimientos y servicios de nuestra región en un solo lugar.</p>
+            <div>
+              <a href="buscar.html" class="btn btn-hero me-2"><i class="bi bi-compass me-1"></i>Explorar empresas</a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item" style="background-image:url('imagenes/fotos/parque-central-tame.jpg')">
+          <div class="carousel-caption-custom">
+            <span class="eyebrow">Tame, Arauca</span>
+            <h1>El corazón <span class="highlight">comercial</span> de nuestro municipio</h1>
+            <p>Encuentra comercio, restaurantes, hoteles y mucho más, todo cerca de ti.</p>
+            <div>
+              <a href="categorias.html" class="btn btn-hero me-2"><i class="bi bi-grid me-1"></i>Ver categorías</a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item" style="background-image:url('imagenes/fotos/porton-bienvenida-tame.jpg')">
+          <div class="carousel-caption-custom">
+            <span class="eyebrow">Tame, Arauca</span>
+            <h1>Bienvenido a <span class="highlight">Tame</span></h1>
+            <p>Tu región, tus empresas, tu estilo de vida.</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- BUSCADOR SUPERPUESTO -->
+    <div class="search-panel">
+      <form class="row g-2 align-items-center"
+        onsubmit="event.preventDefault(); window.location.href='buscar.html?q='+encodeURIComponent(document.getElementById('qInput').value);">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary-brand"></i></span>
+            <input type="text" id="qInput" class="form-control" placeholder="Busca empresas, servicios o categorías...">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" id="catSelect">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control" placeholder="Ubicación (opcional)">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-buscar w-100" type="submit"><i class="bi bi-search me-1"></i>Buscar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CATEGORÍAS -->
+  <section class="container py-5">
+    <div class="section-eyebrow"><i class="bi bi-grid"></i> Explora por categorías <i class="bi bi-grid"></i></div>
+    <div class="row g-3" id="catGrid"></div>
+  </section>
+
+  <!-- EMPRESAS DE LA REGIÓN -->
+  <section class="container py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div class="section-eyebrow mb-0"><i class="bi bi-shop"></i> Empresas de la región</div>
+    </div>
+    <div class="row g-4" id="empresasGrid"></div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    initHeaderFooter("inicio");
+
+    const empresas = DB.all();
+
+    // ---- Categorías ----
+    document.getElementById("catGrid").innerHTML = CATEGORIAS.map(c => `
+  <div class="col-6 col-md-3 col-lg-2">
+    <a href="categoria.html?cat=${c.slug}" class="cat-pill">
+      <div class="cat-icon" style="background:${c.color}"><i class="bi ${c.icono}"></i></div>
+      ${c.nombre}
+      <small>${DB.byCategoria(c.slug).length} empresas</small>
+    </a>
+  </div>`).join("");
+
+    document.getElementById("catSelect").innerHTML += CATEGORIAS.map(c => `<option value="${c.slug}">${c.nombre}</option>`).join("");
+
+    // ---- Empresas ----
+    document.getElementById("empresasGrid").innerHTML = empresas.length
+      ? empresas.map(e => `<div class="col-6 col-md-3">${empresaCardHtml(e)}</div>`).join("")
+      : `<p class="text-muted">Todavía no hay empresas publicadas.</p>`;
+
+  </script>
+</body>
+
+</html>
