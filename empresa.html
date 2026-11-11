@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#0A100A">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Empresa | Anuncios con Estilos</title>
 <link rel="icon" href="imagenes/logo.png">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+  <link href="css/fusion.css" rel="stylesheet">
 </head>
 <body>
 <div id="navbar-slot"></div>
@@ -18,21 +22,40 @@
 <div id="footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="api/empresas.php"></script>
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
 <script>
 initHeaderFooter("");
 
 const id = qs("id");
-const e = DB.getById(id);
 const cont = document.getElementById("contenido");
 
-if (!e) {
+function noEncontrada() {
   cont.innerHTML = `<div class="text-center py-5">
     <i class="bi bi-emoji-frown fs-1 text-muted"></i>
     <h4 class="mt-3">Empresa no encontrada</h4>
     <a href="index.html" class="btn btn-buscar mt-3">Volver al inicio</a>
   </div>`;
+}
+
+if (window.MODO_PHP) {
+  if (!window.USUARIO_ACTUAL) {
+    location.replace("registro.html?next=" + encodeURIComponent("empresa.html?id=" + id));
+  } else {
+    fetch("api/empresa.php?id=" + encodeURIComponent(id), { credentials: "same-origin" })
+      .then(r => { if (r.status === 401) { location.replace("registro.html?next=" + encodeURIComponent("empresa.html?id=" + id)); throw 0; } return r.ok ? r.json() : null; })
+      .then(d => mostrarEmpresa(d))
+      .catch(err => { if (err !== 0) noEncontrada(); });
+  }
+} else {
+  mostrarEmpresa(DB.getById(id));
+}
+
+function mostrarEmpresa(e) {
+if (!e) {
+  noEncontrada();
 } else {
   const cat = catInfo(e.categoria);
   document.title = e.nombre + " | Anuncios con Estilos";
@@ -71,6 +94,11 @@ if (!e) {
         </div>
       </div>
 
+      <div class="bg-white rounded-16 shadow-soft p-4">
+        <h5><i class="bi bi-geo-alt me-2 text-primary-brand"></i>Ubicación</h5>
+        <p class="text-muted small mb-0">${e.direccion}</p>
+        <div class="map-container mt-3" style="height:280px;"><div id="map" style="height:280px;"></div></div>
+      </div>
     </div>
 
     <div class="col-lg-4">
@@ -81,12 +109,13 @@ if (!e) {
         ${e.correo ? `<a href="mailto:${e.correo}" class="btn btn-outline-secondary w-100 mb-3"><i class="bi bi-envelope me-2"></i>${e.correo}</a>` : ''}
         ${e.sitioWeb ? `<a href="${e.sitioWeb}" target="_blank" class="btn btn-outline-secondary w-100 mb-3"><i class="bi bi-globe me-2"></i>Sitio web</a>` : ''}
         <p class="small text-muted mb-2"><i class="bi bi-geo-alt me-2"></i>${e.direccion}</p>
-        ${(!e.whatsapp && !e.telefono) ? `<p class="small text-muted fst-italic mb-0">Datos de contacto pendientes de verificar con el propietario.</p>` : ''}
+        ${e.ficticia ? `<p class="small text-muted fst-italic mb-0">Empresa ficticia de ejemplo: no tiene datos de contacto reales.</p>` : ((!e.whatsapp && !e.telefono) ? `<p class="small text-muted fst-italic mb-0">Datos de contacto pendientes de verificar con el propietario.</p>` : '')}
 
         <h6 class="mt-4 mb-2">Síguenos</h6>
         <div class="d-flex gap-2">
           ${e.redes?.facebook ? `<a href="${e.redes.facebook}" target="_blank" class="footer-aces social-circle" style="color:var(--primary);background:var(--primary-light);"><i class="bi bi-facebook"></i></a>` : ''}
           ${e.redes?.instagram ? `<a href="${e.redes.instagram}" target="_blank" class="footer-aces social-circle" style="color:var(--primary);background:var(--primary-light);"><i class="bi bi-instagram"></i></a>` : ''}
+          ${e.redes?.tiktok ? `<a href="${e.redes.tiktok}" target="_blank" class="footer-aces social-circle" style="color:var(--primary);background:var(--primary-light);"><i class="bi bi-tiktok"></i></a>` : ''}
           ${e.redes?.whatsapp ? `<a href="${e.redes.whatsapp}" target="_blank" class="footer-aces social-circle" style="color:var(--primary);background:var(--primary-light);"><i class="bi bi-whatsapp"></i></a>` : ''}
         </div>
       </div>
@@ -96,7 +125,12 @@ if (!e) {
   document.getElementById("galeriaInner").innerHTML = imagenes.map((img,i)=>`
     <div class="carousel-item h-100 ${i===0?'active':''}"><img src="${img}" class="w-100 h-100" style="object-fit:cover;"></div>`).join("");
 
+  const map = L.map('map').setView([e.lat, e.lng], 16);
+  crearCapaMapa().addTo(map);
+  L.marker([e.lat, e.lng], { icon: iconoMarcador(cat, 34) }).addTo(map).bindPopup(`<h6>${e.nombre}</h6>`).openPopup();
+}
 }
 </script>
+  <script src="js/fusion.js"></script>
 </body>
 </html>

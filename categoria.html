@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#0A100A">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Categoría | Anuncios con Estilos</title>
 <link rel="icon" href="imagenes/logo.png">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+  <link href="css/fusion.css" rel="stylesheet">
 </head>
 <body>
 
@@ -65,6 +69,8 @@
       </div>
     </div>
     <div class="col-lg-4">
+      <div class="section-eyebrow"><span>Mapa</span></div>
+      <div class="map-container mb-3" style="height:320px;"><div id="map-cat" style="height:320px;"></div></div>
       <div class="bg-white p-3 rounded-16 shadow-soft text-center">
         <i class="bi bi-search fs-3 text-primary-brand"></i>
         <p class="mb-2 mt-2 fw-semibold">¿Buscas algo específico?</p>
@@ -78,6 +84,8 @@
 <div id="footer-slot"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="api/empresas.php"></script>
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
 <script>
@@ -107,6 +115,18 @@ function pintarListado(lista) {
 }
 pintarListado(empresas);
 
+let mapCat;
+function pintarMapa(lista) {
+  if (mapCat) { mapCat.remove(); }
+  mapCat = L.map('map-cat').setView([6.4635, -71.7330], 14);
+  crearCapaMapa().addTo(mapCat);
+  lista.forEach(e => {
+    L.marker([e.lat, e.lng], { icon: iconoMarcador(cat, 28) }).addTo(mapCat).bindPopup(popupEmpresa(e));
+  });
+  if (lista.length) mapCat.fitBounds(lista.map(e => [e.lat, e.lng]), { padding: [30, 30], maxZoom: 16 });
+}
+pintarMapa(empresas);
+
 function filtrarSub(s) {
   document.getElementById("subcatSelect").value = s;
   aplicarFiltros();
@@ -121,6 +141,7 @@ function aplicarFiltros() {
     return matchQ && matchSub;
   });
   pintarListado(filtradas);
+  pintarMapa(filtradas);
   document.querySelectorAll("#subcatPills .badge-cat").forEach(b=>b.classList.toggle("active", b.dataset.sub===sub));
 }
 
@@ -128,5 +149,6 @@ document.getElementById("filtroForm").addEventListener("submit", e=>{ e.preventD
 document.getElementById("subcatSelect").addEventListener("change", aplicarFiltros);
 document.getElementById("qInput").addEventListener("input", aplicarFiltros);
 </script>
+  <script src="js/fusion.js"></script>
 </body>
 </html>
