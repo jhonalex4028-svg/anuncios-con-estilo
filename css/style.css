@@ -610,23 +610,3 @@ a {
   color: #fff;
   transform: scale(1.06);
 }
-
-/* ---------- Redes del footer (logo + nombre) ---------- */
-.footer-redes { display: flex; flex-direction: column; gap: .6rem; }
-.footer-red {
-  display: inline-flex;
-  align-items: center;
-  gap: .7rem;
-  color: #fff;
-  text-decoration: none;
-  font-size: .95rem;
-}
-.footer-red img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: 40% 30%;
-  border: 2px solid rgba(255,255,255,.35);
-}
-.footer-red:hover { color: #fff; opacity: .85; }

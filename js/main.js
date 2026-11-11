@@ -46,16 +46,6 @@ function renderFooter() {
             <span class="fw-bold text-white fs-5">Anuncios con Estilos</span>
           </a>
           <p>Tu región, tus empresas, tu estilo de vida. Conectamos el talento y los negocios locales con las personas que los buscan.</p>
-          <div class="footer-redes mt-3">
-            <a href="#" class="footer-red" title="Facebook: Anuncios con Estilo">
-              <img src="imagenes/logo.png" alt="Logo Anuncios con Estilo">
-              <span><i class="bi bi-facebook me-1"></i>Anuncios con Estilo</span>
-            </a>
-            <a href="#" class="footer-red" title="Instagram: Anuncios con Estilo">
-              <img src="imagenes/logo.png" alt="Logo Anuncios con Estilo">
-              <span><i class="bi bi-instagram me-1"></i>Anuncios con Estilo</span>
-            </a>
-          </div>
         </div>
         <div class="col-lg-2 col-6">
           <h6>Enlaces rápidos</h6>
